@@ -1,0 +1,21 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Java
+backend/target/
+*.log
+
+# React
+frontend/node_modules/
+frontend/dist/
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
