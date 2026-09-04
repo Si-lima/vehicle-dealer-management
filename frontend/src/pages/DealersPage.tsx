@@ -8,6 +8,7 @@ import { DealerForm } from "../components/DealerForm";
 import type { DealerFormData } from "../schemas/dealerSchema";
 import {
   createDealer,
+  deleteDealer,
   listDealers,
   updateDealer,
 } from "../services/dealerService";
@@ -50,6 +51,15 @@ export function DealersPage() {
       setDealerToEdit(null);
     },
   });
+   const deleteMutation = useMutation({
+     mutationFn: deleteDealer,
+     onSuccess: () => {
+       queryClient.invalidateQueries({
+         queryKey: ["dealers"],
+      });
+      setDealerToEdit(null);
+    },
+  });
 
   function handleSubmitDealer(data: DealerFormData) {
     if (dealerToEdit) {
@@ -74,7 +84,18 @@ export function DealersPage() {
     updateMutation.reset();
     setDealerToEdit(null);
   }
+  function handleDelete(dealer: Dealer) {
+    const confirmed = window.confirm(
+      `Deseja realmente excluir a concessionária "${dealer.corporateName}"?`,
+  );
 
+    if (!confirmed) {
+      return;
+  }
+
+    deleteMutation.reset();
+    deleteMutation.mutate(dealer.id);
+  }
   const isSubmitting =
     createMutation.isPending || updateMutation.isPending;
 
@@ -115,6 +136,19 @@ export function DealersPage() {
       {updateMutation.isError && (
         <p>Não foi possível atualizar a concessionária.</p>
       )}
+      {deleteMutation.isSuccess && (
+        <p>Concessionária excluída com sucesso!</p>
+      )}
+
+      {deleteMutation.isError && (
+        <p>
+          Não foi possível excluir a concessionária. Verifique se existem
+          veículos vinculados a ela.
+        </p>
+     )}
+
+     <h3>Concessionárias cadastradas</h3>
+
 
       <h3>Concessionárias cadastradas</h3>
 
@@ -147,7 +181,16 @@ export function DealersPage() {
                 onClick={() => handleEdit(dealer)}
               >
                 Editar
-              </button>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleDelete(dealer)}
+                  disabled={deleteMutation.isPending}
+              > 
+                  {deleteMutation.isPending ? "Excluindo..." : "Excluir"}
+               </button>
+             
             </li>
           ))}
         </ul>
