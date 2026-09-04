@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   dealerSchema,
@@ -7,16 +8,19 @@ import {
 
 interface DealerFormProps {
   onSubmit: (data: DealerFormData) => void;
-  isSubmitting?: boolean;
+  isSubmitting?: boolean; 
+  isSuccess?: boolean;
 }
 
 export function DealerForm({
   onSubmit,
   isSubmitting = false,
+  isSuccess = false,
 }: DealerFormProps) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<DealerFormData>({
     resolver: zodResolver(dealerSchema),
@@ -30,6 +34,14 @@ export function DealerForm({
       state: "",
     },
   });
+	useEffect(() => {
+
+	  if (isSuccess) {
+
+	   reset();
+          }
+
+        }, [isSuccess, reset]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
