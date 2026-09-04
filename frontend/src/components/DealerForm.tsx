@@ -5,17 +5,32 @@ import {
   dealerSchema,
   type DealerFormData,
 } from "../schemas/dealerSchema";
+import type { Dealer } from "../types/dealer";
 
 interface DealerFormProps {
   onSubmit: (data: DealerFormData) => void;
-  isSubmitting?: boolean; 
+  isSubmitting?: boolean;
   isSuccess?: boolean;
+  dealerToEdit?: Dealer | null;
+  onCancelEdit?: () => void;
 }
+
+const emptyDealer: DealerFormData = {
+  corporateName: "",
+  cnpj: "",
+  cep: "",
+  street: "",
+  neighborhood: "",
+  city: "",
+  state: "",
+};
 
 export function DealerForm({
   onSubmit,
   isSubmitting = false,
   isSuccess = false,
+  dealerToEdit = null,
+  onCancelEdit,
 }: DealerFormProps) {
   const {
     register,
@@ -24,24 +39,30 @@ export function DealerForm({
     formState: { errors },
   } = useForm<DealerFormData>({
     resolver: zodResolver(dealerSchema),
-    defaultValues: {
-      corporateName: "",
-      cnpj: "",
-      cep: "",
-      street: "",
-      neighborhood: "",
-      city: "",
-      state: "",
-    },
+    defaultValues: emptyDealer,
   });
-	useEffect(() => {
 
-	  if (isSuccess) {
+  useEffect(() => {
+    if (dealerToEdit) {
+      reset({
+        corporateName: dealerToEdit.corporateName,
+        cnpj: dealerToEdit.cnpj,
+        cep: dealerToEdit.cep,
+        street: dealerToEdit.street,
+        neighborhood: dealerToEdit.neighborhood,
+        city: dealerToEdit.city,
+        state: dealerToEdit.state,
+      });
+    } else {
+      reset(emptyDealer);
+    }
+  }, [dealerToEdit, reset]);
 
-	   reset();
-          }
-
-        }, [isSuccess, reset]);
+  useEffect(() => {
+    if (isSuccess && !dealerToEdit) {
+      reset(emptyDealer);
+    }
+  }, [isSuccess, dealerToEdit, reset]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -103,8 +124,22 @@ export function DealerForm({
       </div>
 
       <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Salvando..." : "Cadastrar concessionária"}
+        {isSubmitting
+          ? "Salvando..."
+          : dealerToEdit
+            ? "Salvar alterações"
+            : "Cadastrar concessionária"}
       </button>
+
+      {dealerToEdit && (
+        <button
+          type="button"
+          onClick={onCancelEdit}
+          disabled={isSubmitting}
+        >
+          Cancelar edição
+        </button>
+      )}
     </form>
   );
 }
