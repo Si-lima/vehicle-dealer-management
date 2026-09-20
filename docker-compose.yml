@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: vehicle_dealer_db
       POSTGRES_USER: vehicle_user
-      POSTGRES_PASSWORD: vehicle_password
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-vehicle_password}
     ports:
       - "5433:5432"
     volumes:

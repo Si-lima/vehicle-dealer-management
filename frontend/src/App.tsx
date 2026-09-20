@@ -1,5 +1,6 @@
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import { DealersPage } from './pages/DealersPage'
+import { VehiclesPage } from "./pages/VehiclesPage";
 function HomePage() {
   return (
     <section className="card">
@@ -16,14 +17,11 @@ function HomePage() {
     
 
 
-function VehiclesPage() {
-  return (
-    <section className="card">
-      <h2>Veículos</h2>
-      <p>A listagem de veículos será implementada nesta tela.</p>
-    </section>
-  )
-}
+
+  
+    
+      
+     
 
 function App() {
   return (
